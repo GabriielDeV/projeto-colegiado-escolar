@@ -1,0 +1,131 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layouts :: head('Lista de Processos')}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SYROLkX5hp9SZlq5u80wO3lwkO3RKENHR6L5eb" crossorigin="anonymous">
+    <!-- Adicione aqui seus estilos personalizados se necessário -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        header {
+            background-color: #343a40;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+
+        table {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        th, td {
+            text-align: center;
+        }
+
+        .btn-outline-warning {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{layouts :: header('Iniciar uma reunião')}"></header>
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div role="alert" class="alert d-flex align-items-center alert-dismissible fade show" th:if="${message ne null}" th:classappend="${error} ? 'alert-danger' : 'alert-success'">
+            <i class="me-2" th:classappend="${error} != null ? (${error} ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check') : ''"></i>
+            <div th:text="${message}"></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Status Reunião</th>
+                    <th scope="col">Colegiado Reunião</th>
+                    <th scope="col">Aluno</th>
+                    <th scope="col">Professor</th>
+                    <th scope="col">Requerimento Processo</th>
+                    <th scope="col">Status Processo</th>
+                    <th scope="col">Ação</th>
+                    <th scope="col">Finalizar Seção</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reuniao : ${reunioes}">
+                    <td class="col-1" th:text="${reuniao.getId()}">ID</td>
+                    <td class="col-2" th:text="${#temporals.format(reuniao.dataReuniao, 'dd/MM/yyyy')}">Data</td>
+                    <td class="col-2" th:text="${reuniao.status}">Status</td>
+                    <td class="col-2" th:text="${reuniao.colegiado.curso}">Colegiado Reunião</td>
+                    <td class="col-2">
+                        <span th:each="processo : ${reuniao.processos}">
+                            <span th:text="${processo.aluno.getNome()}"></span>
+                        </span>
+                    </td>
+                    <td class="col-2">
+                        <span th:each="processo : ${reuniao.processos}">
+                            <span th:text="${processo.professor.getNome()}"></span>
+                        </span>
+                    </td>
+                    <td class="col-2">
+                        <span th:each="processo : ${reuniao.processos}">
+                            <span th:text="${processo.requerimento}"></span>
+                        </span>
+                    </td>
+
+                    <td class="col-2">
+                        <span th:each="processo : ${reuniao.processos}">
+                            <span th:text="${processo.getStatus()}"></span>
+                        </span>
+                    </td>
+
+                    <td class="col-1">
+                        <span th:each="processo : ${reuniao.processos}">
+                            <!-- Adicione logs para depuração -->
+                            <!--<span th:utext="${'Parecer: ' + processo.parecer + ', Status: ' + processo.getStatus()}"></span>-->
+
+                            <span th:unless="${processo.parecer == null or processo.getStatus() == 'Não pode ser alterado'}">
+                                <a class="btn btn-outline-warning" th:href="@{'/reunioes/iniciar-reuniao/' + ${reuniao.id}}">
+                                    <i class="fa-solid fa-flag-checkered"></i>
+                                </a>
+                            </span>
+                        </span>
+                    </td>
+
+                    <td class="col-1">
+                        <form th:action="@{/reunioes/reuniao/encerrar}" method="post">
+                            <input type="hidden" th:name="idReuniao" th:value="${reuniao.id}" />
+                            <button type="submit" class="btn btn-outline-warning">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>

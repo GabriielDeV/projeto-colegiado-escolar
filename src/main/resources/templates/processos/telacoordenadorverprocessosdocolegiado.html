@@ -1,0 +1,83 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layouts :: head('Lista de Processos por Colegiado')}"></head>
+<body>
+<header th:replace="~{layouts :: header('Consulta todos os processos do colegiado')}"></header>
+
+<div class="container mt-4 mb-5">
+    <form id="filtroForm" th:action="@{/processos/porColegiado}" method="get">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="colegiadoFilter" class="form-label">Selecionar Colegiado:</label>
+                <select id="colegiadoFilter" name="colegiadoId" class="form-select">
+                    <option th:each="colegiado : ${colegiados}" th:value="${colegiado.id}" th:text="${colegiado.curso}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="alunoFilter" class="form-label">Filtrar por Aluno:</label>
+                <select id="alunoFilter" name="alunoId" class="form-select">
+                    <option th:text="'-- Todos os Alunos --'" th:value="${null}"></option>
+                    <option th:each="aluno : ${alunos}" th:value="${aluno.id}" th:text="${aluno.nome}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="professorFilter" class="form-label">Selecionar Professor:</label>
+                <select id="professorFilter" name="professorId" class="form-select">
+                    <option th:text="'-- Todos os Professores --'" th:value="${null}"></option>
+                    <option th:each="professor : ${professores}" th:value="${professor.id}" th:text="${professor.nome}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Filtrar por Status do Processo:</label>
+                <select id="statusFilter" name="statusId" class="form-select">
+                    <option th:text="'-- Todos os Status --'" th:value="${null}"></option>
+                    <option th:each="status : ${Statusprocesso}" th:value="${status}" th:text="${status.getStatuString()}"></option>
+
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+    </form>
+
+    <div id="processosDiv" class="col-12 mt-4">
+        <table class="table table-striped">
+            <!-- Cabeçalhos da tabela -->
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Requerimento</th>
+                <th scope="col">Aluno</th>
+                <th scope="col">Professor</th>
+                <th scope="col">Status</th>
+                <th scope="col">Parecer</th>
+                <th scope="col">Colegiado</th>
+                <th scope="col">Data de Recebimento</th>
+                <th scope="col">Data de Distribuição</th>
+                <!-- Adicione mais colunas conforme necessário -->
+            </tr>
+            </thead>
+
+            <!-- Corpo da tabela -->
+            <tbody id="processosBody">
+            <tr th:each="processo : ${processos}">
+                <th class="col-1" scope="row" th:text="${processo.getId()}">ID</th>
+                <td class="col-1" th:text="${processo.requerimento}">Requerimento</td>
+                <td class="col-1" th:text="${processo.aluno != null ? processo.aluno.getNome() : ''}">Id Aluno</td>
+                <td class="col-3" th:text="${processo.professor != null ? processo.professor.nome : ''}">Professor</td>
+                <td class="col-1" th:text="${processo.getStatus()}">Status</td>
+                <td class="col-1" th:text="${processo.parecer}">Parecer</td>
+                <td class="col-1" th:text="${processo.professor.colegiado.curso}">Colegiado</td>
+                <td class="col-3" th:text="${#temporals.format(processo.dataRecepcao, 'dd/MM/yyyy')}">Data de Recebimento</td>
+                <td class="col-3" th:text="${#temporals.format(processo.dataDistribuicao, 'dd/MM/yyyy')}">Data de Distribuição</td>
+                <!-- Adicione mais colunas conforme necessário -->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Adicione seus scripts e estilos necessários aqui -->
+
+</body>
+</html>
